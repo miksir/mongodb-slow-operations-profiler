@@ -1,8 +1,12 @@
 version: '3.7'
+volumes:
+  mongo_collector_db:
 services:
   collector-db:
     image: mongo:4.2
     container_name: collector-db
+    volumes:
+    - mongo_collector_db:/data/db
 #  test-db:
 #    image: mongo:4.2
 #    container_name: test-db
@@ -12,7 +16,7 @@ services:
       dockerfile: Dockerfile
     container_name: profiler-webapp
     volumes:
-      - ./src/main/resources/config.json:/usr/local/tomcat/config.json
+      - ./src/main/resources/config.prod.json:/usr/local/tomcat/config.json
     depends_on:
       - collector-db
 #      - test-db
