@@ -21,7 +21,7 @@ services:
       - collector-db
 #      - test-db
     ports:
-      - "127.0.0.1:8080:8080"
+      - "8080:8080"
     links:
       - "collector-db"
 #     - "test-db"
