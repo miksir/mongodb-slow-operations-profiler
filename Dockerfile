@@ -1,6 +1,6 @@
 FROM maven:3-ibmjava-8-alpine AS builder
 COPY  ./ /usr/src/app/
-RUN rm -rf /root/.m2 && mv -f /usr/src/app/.m2 /root/
+RUN test -d /usr/src/app/.m2 && mv -f /usr/src/app/.m2 /root/
 WORKDIR /usr/src/app/
 RUN mvn package
 
