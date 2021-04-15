@@ -1,8 +1,6 @@
-FROM alpine/git AS cloner
-RUN cd /root && git clone https://github.com/idealo/mongodb-slow-operations-profiler.git
-
 FROM maven:3-ibmjava-8-alpine AS builder
-COPY --from=cloner /root/mongodb-slow-operations-profiler/ /usr/src/app/
+COPY  ./ /usr/src/app/
+RUN rm -rf /root/.m2 && mv -f /usr/src/app/.m2 /root/
 WORKDIR /usr/src/app/
 RUN mvn package
 

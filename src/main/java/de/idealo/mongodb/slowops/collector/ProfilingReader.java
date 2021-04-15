@@ -239,7 +239,11 @@ public class ProfilingReader extends Thread implements Terminable{
     }
 
     private boolean systemProfileExists(MongoDatabase db){
-        return db.listCollectionNames().into(new ArrayList<String>()).contains(SYSTEM_PROFILE);
+        try {
+            return db.listCollectionNames().into(new ArrayList<String>()).contains(SYSTEM_PROFILE);
+        } catch (MongoCommandException $e) {
+            return false;
+        }
     }
 
     private void readSystemProfile() {
@@ -611,7 +615,7 @@ public class ProfilingReader extends Thread implements Terminable{
     }
 
     private long getSystemProfileMaxSizeInBytes(MongoDatabase db){
-        if(systemProfileExists(db)) {
+        if(systemProfileExists(db) && profiledServerDto.getSystemProfileMaxSizeInMB() >= 0) {
             final Document collStatsResults = db.runCommand(new Document("collStats", SYSTEM_PROFILE));
             return Util.getNumber(collStatsResults, "maxSize", 0);
         }
@@ -621,6 +625,10 @@ public class ProfilingReader extends Thread implements Terminable{
     private void increaseSizeOfSystemProfileCollection(){
         final MongoDbAccessor mongo = getMongoDbAccessor();
         boolean needToPauseProfiling=false;
+
+        if(profiledServerDto.getSystemProfileMaxSizeInMB() < 0) {
+            return;
+        }
 
         try {
 

@@ -131,6 +131,12 @@ public class MongoResolver implements Callable<MongoResolver> {
                         if (entry instanceof Document) {
                             final Document entryDoc = (Document) entry;
                             final String dbName = entryDoc.getString("name");
+                            try {
+                                mongoDbAccessor.runCommand(dbName, new BasicDBObject("listCollections", 1)); //access check
+                            } catch (MongoCommandException e) {
+                                LOG.error("List collection failed for {}", dbName, e);
+                                continue;
+                            }
                             result.add(dbName);
                         }
                     }
